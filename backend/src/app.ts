@@ -20,6 +20,10 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 //remove it in production
 // app.use(morgan("dev"));
+app.get("/", (_req, res) => {
+  res.send("✅ Backend is running on Vercel successfully!");
+});
+
 
 app.use("/api/v1", appRouter);
 
