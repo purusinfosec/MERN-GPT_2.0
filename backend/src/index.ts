@@ -1,19 +1,42 @@
-import app from "./app.js";
-import { connectToDatabase } from "./db/connection.js";
+import express from "express";
+import { config } from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import mongoose from "mongoose";
+import appRouter from "./routes/index.js";
 
-const PORT = process.env.PORT || 5000;
+config(); // ✅ Load environment variables
 
-// 🟢 Connect to DB and export handler (Vercel will use this)
-connectToDatabase()
-  .then(() => {
-    console.log("✅ Connected to Database");
+const app = express();
 
-    // Only listen locally (for development)
-    if (process.env.NODE_ENV !== "production") {
-      app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
-    }
+// ✅ Middlewares
+app.use(
+  cors({
+    origin: "https://mern-gpt-2-0-frontend.vercel.app",
+    credentials: true,
   })
-  .catch((err) => console.error("❌ Database Connection Error:", err));
+);
 
-// 🟢 Export Express app for Vercel
+app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
+// ✅ Database connection
+const connectToDatabase = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("✅ MongoDB connected successfully!");
+  } catch (error) {
+    console.error("❌ MongoDB connection failed:", error.message);
+  }
+};
+connectToDatabase();
+
+// ✅ Root test route
+app.get("/", (_req, res) => {
+  res.send("✅ Backend is running on Vercel successfully!");
+});
+
+// ✅ API routes
+app.use("/api/v1", appRouter);
+
 export default app;
