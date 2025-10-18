@@ -1,39 +1,46 @@
 import express from "express";
 import { config } from "dotenv";
+import appRouter from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import mongoose from "mongoose";
-import appRouter from "./routes/index.js";
 
-config(); // ✅ Load environment variables
+config();
 
 const app = express();
 
-// ✅ Middlewares
-app.use(
-  cors({
-    origin: "https://mern-gpt-2-0-frontend.vercel.app",
-    credentials: true,
-  })
-);
+// ✅ CORS setup – allow only production frontend
+app.use(cors({
+  origin: ["https://mern-gpt-2-0-frontend.vercel.app"],
+  credentials: true,
+}));
 
+// ✅ Middleware
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-// ✅ Database connection
-const connectToDatabase = async () => {
+// ✅ MongoDB Connection
+const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL);
-    console.log("✅ MongoDB connected successfully!");
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("🟢 MongoDB connected successfully!");
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message);
+    console.error("🔴 MongoDB connection failed:", error.message);
   }
 };
-connectToDatabase();
+connectDB();
 
-// ✅ Root test route
-app.get("/", (_req, res) => {
-  res.send("✅ Backend is running on Vercel successfully!");
+// ✅ Default route (for Vercel status check)
+app.get("/", async (_req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const isDBConnected = dbState === 1 ? "🟢 Connected" : "🔴 Not Connected";
+
+  res.send(`
+    <div style="font-family: monospace; color: #00ff99;">
+      ✅ Backend is running on Vercel successfully!<br>
+      Database Status: ${isDBConnected}
+    </div>
+  `);
 });
 
 // ✅ API routes
