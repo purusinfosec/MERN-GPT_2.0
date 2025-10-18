@@ -38,7 +38,7 @@
         //create token and store cookie
         res.clearCookie(COOKIE_NAME, {
            httpOnly: true,
-           domain: "localhost",
+        //    domain: "localhost",
            signed: true,
            path: "/",
         });
@@ -49,7 +49,7 @@
          expires.setDate(expires.getDate() + 7);
          res.cookie(COOKIE_NAME, token, { 
              path: "/",
-             domain: "localhost",
+            //  domain: "localhost",
              expires, 
              httpOnly: true,
              signed: true,
@@ -84,7 +84,7 @@
         //create token and store cookie
         res.clearCookie(COOKIE_NAME, {
            httpOnly: true,
-           domain: "localhost",
+        //    domain: "localhost",
            signed: true,
            path: "/",
         });
@@ -95,7 +95,7 @@
          expires.setDate(expires.getDate() + 7);
          res.cookie(COOKIE_NAME, token, { 
              path: "/",
-             domain: "localhost",
+            //  domain: "localhost",
              expires, 
              httpOnly: true,
              signed: true,
@@ -160,7 +160,7 @@
 
         res.clearCookie(COOKIE_NAME, {
            httpOnly: true,
-           domain: "localhost",
+        //    domain: "localhost",
            signed: true,
            path: "/",
         });
